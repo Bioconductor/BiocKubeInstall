@@ -137,7 +137,7 @@ kube_wait <-
 #'     kubernetes.
 #'
 #' @importFrom RedisParam RedisParam
-#' @importFrom BiocParallel bpiterate
+#' @importFrom BiocParallel bpiterate bpprogressbar SerialParam
 #' @importFrom futile.logger flog.error flog.info flog.appender
 #'     appender.file appender.tee
 #'
