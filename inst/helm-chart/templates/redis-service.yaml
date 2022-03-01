@@ -3,8 +3,14 @@ kind: Service
 metadata:
   name: redis
 spec:
+  type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.redis.containerPort }}
       targetPort: {{ .Values.redis.containerPort }}
+      {{- if eq .Values.service.type "NodePort" }}
+      {{- if .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+      {{- end }}
   selector:
     app: redis
