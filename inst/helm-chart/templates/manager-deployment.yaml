@@ -28,7 +28,7 @@ spec:
         - {{ if .Values.manager.extraCommand -}}
           {{- tpl .Values.manager.extraCommand $ }};
           {{- end -}}
-          {{ .Values.manager.defaultCommand }}
+          {{ tpl .Values.manager.defaultCommand . }}
   restartPolicy: {{ .Values.restartPolicy | quote}}
   volumes:
   - name: nfs-data
