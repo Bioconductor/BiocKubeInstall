@@ -5,7 +5,7 @@ RUN apt-get update && \
         apt-get install -y --no-install-recommends libhiredis-dev && \
         rm -rf /var/lib/apt/lists/*
 
-RUN R -e 'BiocManager::install("Bioconductor/BiocParallel")'
-RUN R -e 'BiocManager::install("Bioconductor/BiocKubeInstall")'
+RUN R -e 'if(strsplit(BiocManager::install("Bioconductor/BiocParallel", dependencies = TRUE), "/")[[1]][2] %in% rownames(installed.packages())) q(status = 0) else q(status = 1)'
+RUN R -e 'if(strsplit(BiocManager::install("Bioconductor/BiocKubeInstall", dependencies = TRUE), "/")[[1]][2] %in% rownames(installed.packages())) q(status = 0) else q(status = 1)'
 
 COPY worker.R /home/docker/
