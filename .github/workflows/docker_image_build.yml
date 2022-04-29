@@ -22,14 +22,27 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
-      - name: Build and push manager
-        id: docker_build_manager
+      - name: Build and push devel manager
+        id: docker_build_devel_manager
         uses: docker/build-push-action@v2
         with:
           file: inst/docker/Dockerfile.manager
           context: ./inst/docker
           push: true
-          tags: bioconductor/bioc-redis:manager
+          tags: bioconductor/bioc-redis:manager-${{env.DEVEL_TAG}}
+          build-args: |
+            RELEASE=devel
+
+      - name: Build and push release manager
+        id: docker_build_release_manager
+        uses: docker/build-push-action@v2
+        with:
+          file: inst/docker/Dockerfile.manager
+          context: ./inst/docker
+          push: true
+          tags: bioconductor/bioc-redis:manager-${{env.RELEASE_TAG}}
+          build-args: |
+            RELEASE=${{env.RELEASE_TAG}}
       
       - name: Build and push devel worker
         id: docker_build_devel
