@@ -1,4 +1,5 @@
-FROM bioconductor/bioconductor_docker:devel
+ARG RELEASE=RELEASE_3_15
+FROM bioconductor/bioconductor_docker:$RELEASE
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends libhiredis-dev vim gnupg && \
