@@ -91,6 +91,7 @@ jobs:
           --timeout 600s \
           --set biocVersion="${{ github.event.inputs.major_ver }}.${{ github.event.inputs.minor_ver }}" \
           --set workers.image.tag="RELEASE_${{ github.event.inputs.major_ver }}_${{ github.event.inputs.minor_ver }}" \
+          --set manager.image.tag="manager-RELEASE_${{ github.event.inputs.major_ver }}_${{ github.event.inputs.minor_ver }}" \
           --set persistence.size=$NFS_PD_SIZE \
           --set persistence.gcpPdName="biockubeinstall-nfs-pd-${{needs.clusterlaunch.outputs.prefix}}" inst/helm-chart --wait
 
