@@ -29,7 +29,7 @@ jobs:
           file: inst/docker/Dockerfile.manager
           context: ./inst/docker
           push: true
-          tags: bioconductor/bioc-redis:manager-${{env.DEVEL_TAG}}
+          tags: bioconductor/bioc-redis:manager-${{env.DEVEL_TAG}}-azure
           build-args: |
             RELEASE=devel
 
@@ -40,7 +40,7 @@ jobs:
           file: inst/docker/Dockerfile.manager
           context: ./inst/docker
           push: true
-          tags: bioconductor/bioc-redis:manager-${{env.RELEASE_TAG}}
+          tags: bioconductor/bioc-redis:manager-${{env.RELEASE_TAG}}-azure
           build-args: |
             RELEASE=${{env.RELEASE_TAG}}
       
@@ -51,7 +51,7 @@ jobs:
           file: inst/docker/Dockerfile.worker
           context: ./inst/docker
           push: true
-          tags: bioconductor/bioc-redis:${{env.DEVEL_TAG}}
+          tags: bioconductor/bioc-redis:${{env.DEVEL_TAG}}-azure
           build-args: |
             RELEASE=devel
 
@@ -62,7 +62,7 @@ jobs:
           file: inst/docker/Dockerfile.worker
           context: ./inst/docker
           push: true
-          tags: bioconductor/bioc-redis:${{env.RELEASE_TAG}}
+          tags: bioconductor/bioc-redis:${{env.RELEASE_TAG}}-azure
           build-args: |
             RELEASE=${{env.RELEASE_TAG}}
 
