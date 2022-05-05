@@ -12,7 +12,7 @@ biocVersion: '3.14'
 workers:
   poolSize: 50              # Number of workers in the cluster
   image:
-    repository: bioconductor/bioc-redis
+    repository: bioconductor/bioc-redis-worker
     tag: RELEASE_3_14 # Needs to match the biocVersion
   # Inject an `sh` prequel command to run before `R -f /home/docker/worker.R`
   extraCommand: ""
@@ -26,7 +26,7 @@ workers:
 
 manager:
   image:
-    repository: bioconductor/bioc-redis
+    repository: bioconductor/bioc-redis-manager
     tag: manager
   defaultCommand: |-
     Rscript -e 'BiocKubeInstall::kube_run("{{ .Values.biocVersion }}", image_name = "{{ .Values.dockerImageName }}", exclude_pkgs = c("canceR"))'

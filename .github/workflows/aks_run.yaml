@@ -94,7 +94,7 @@ jobs:
           --create-namespace --timeout 600s \
           --set biocVersion="${DEVEL_MAJOR_VER}.${DEVEL_MINOR_VER}" \
           --set workers.image.tag="RELEASE_${DEVEL_MAJOR_VER}_${DEVEL_MINOR_VER}-azure" \
-          --set manager.image.tag="manager-RELEASE_${DEVEL_MAJOR_VER}_${DEVEL_MINOR_VER}-azure" \
+          --set manager.image.tag="RELEASE_${DEVEL_MAJOR_VER}_${DEVEL_MINOR_VER}-azure" \
           --set nfs.persistence.size="$((${NFS_PD_SIZE}+10))Gi" \
           --set persistence.size="${NFS_PD_SIZE}Gi" \
           . --wait
@@ -169,7 +169,7 @@ jobs:
           --create-namespace --timeout 600s \
           --set biocVersion="${RELEA_MAJOR_VER}.${RELEA_MINOR_VER}" \
           --set workers.image.tag="RELEASE_${RELEA_MAJOR_VER}_${RELEA_MINOR_VER}-azure" \
-          --set manager.image.tag="manager-RELEASE_${RELEA_MAJOR_VER}_${RELEA_MINOR_VER}-azure" \
+          --set manager.image.tag="RELEASE_${RELEA_MAJOR_VER}_${RELEA_MINOR_VER}-azure" \
           --set nfs.persistence.size="$((${NFS_PD_SIZE}+10))Gi" \
           --set persistence.size="${NFS_PD_SIZE}Gi" \
           . --wait

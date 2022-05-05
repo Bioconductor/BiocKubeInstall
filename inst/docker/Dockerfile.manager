@@ -1,5 +1,6 @@
 ARG RELEASE=RELEASE_3_15
 FROM bioconductor/bioconductor_docker:$RELEASE
+ARG BRANCH=master
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends libhiredis-dev vim gnupg && \
@@ -23,7 +24,7 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash \
     && mv /tmp/azcopy_linux_amd64*/azcopy /usr/local/bin \
     && rm -rf /tmp/azcopy.tar.gz /tmp/azcopy_linux_amd64*
 
-RUN R -e 'BiocManager::install("Bioconductor/BiocKubeInstall")'
+RUN R -e "BiocManager::install('Bioconductor/BiocKubeInstall@$BRANCH')"
 RUN R -e 'BiocManager::install("Bioconductor/BiocParallel")'
 
 COPY manager_demo.R /home/rstudio/manager_demo.R

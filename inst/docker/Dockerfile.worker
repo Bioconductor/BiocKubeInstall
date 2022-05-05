@@ -1,11 +1,12 @@
 ARG RELEASE=RELEASE_3_15
 FROM bioconductor/bioconductor_docker:$RELEASE
+ARG BRANCH=master
 
 RUN apt-get update && \
         apt-get install -y --no-install-recommends libhiredis-dev && \
         rm -rf /var/lib/apt/lists/*
 
 RUN R -e 'BiocManager::install("Bioconductor/BiocParallel")'
-RUN R -e 'BiocManager::install("Bioconductor/BiocKubeInstall")'
+RUN R -e "BiocManager::install('Bioconductor/BiocKubeInstall@$BRANCH')"
 
 COPY worker.R /home/docker/
