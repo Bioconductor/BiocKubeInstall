@@ -174,13 +174,13 @@ NULL
 #' @export
 pkg_dependencies <-
     function(version, build = c("_software", "_update"),
-             binary_repo = character(),
+             # binary_repo = character(),
              exclude = character())
 {
     build <- match.arg(build)
-    stopifnot(
-        .is_character(binary_repo)
-    )
+    # stopifnot(
+    #     .is_character(binary_repo)
+    # )
 
     repos <- .worker_repositories(version)
     db <- available.packages(repos = repos)
@@ -196,15 +196,15 @@ pkg_dependencies <-
     }
     ## TODO: The _update function is still not working as expected.
     ## investigate update_PACAKGES() function
-    else if (identical(build, "_update")) {
-        if (missing(binary_repo)) {
-            binary_repo_url <- sprintf("%s/", binary_repo)
-        }
-        deps <- .pkg_dependencies_update(version, db, binary_repo_url)
-    } else {
-        ## FIXME: support building arbitrary vector of packages?
-        deps <- .pkg_dependencies(version, db, binary_repo_url, build)
-    }
+    # else if (identical(build, "_update")) {
+    #     if (missing(binary_repo)) {
+    #         binary_repo_url <- sprintf("%s/", binary_repo)
+    #     }
+    #     deps <- .pkg_dependencies_update(version, db, binary_repo_url)
+    # } else {
+    #     ## FIXME: support building arbitrary vector of packages?
+    #     deps <- .pkg_dependencies(version, db, binary_repo_url, build)
+    # }
 
     flog.info(
         "%d packages in dependency graph",
