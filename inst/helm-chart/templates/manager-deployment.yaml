@@ -5,7 +5,7 @@ metadata:
   labels:
     app: rstudio
 spec:
-  containers:
+  initContainers:
     - name: manager
       image: {{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}
       imagePullPolicy: {{ .Values.pullPolicy }}
@@ -14,6 +14,13 @@ spec:
       volumeMounts:
         - name: nfs-data
           mountPath: {{ .Values.persistence.mountPath }}
+        {{- range $key, $entry := .Values.extraFileMappings -}}
+        {{- if $entry.applyToManager }}
+        - name: {{ include "biockubeinstall.getExtraFilesUniqueName" $key }}
+          mountPath: {{ $key }}
+          subPath: {{ include "biockubeinstall.getFilenameFromPath" $key }}
+        {{- end }}
+        {{- end }}
       env:
         - name: PASSWORD
           value: {{ .Values.rstudioPassword | quote }}
@@ -26,8 +33,82 @@ spec:
           {{- tpl .Values.manager.extraCommand $ }};
           {{- end -}}
           {{ tpl .Values.manager.defaultCommand . }}
+  containers:
+    - name: osn-rclone-copy
+      image: rclone/rclone:latest
+      command:
+        - /bin/sh
+        - -c
+      args:
+        - rclone copyto /host/binary_{{ .Values.biocVersion | replace "." "_" }} osn:bir190004-bucket01/bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker -v && rclone copyto /host/library_{{ .Values.biocVersion | replace "." "_" }} osn:bir190004-bucket01/bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker/src/contrib -v && rclone copyto /host/logs_{{ .Values.biocVersion | replace "." "_" }} osn:bir190004-bucket01/bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker/src/package_logs -v
+      volumeMounts:
+        - name: nfs-data
+          mountPath: {{ .Values.persistence.mountPath }}
+        {{- range $key, $entry := .Values.extraFileMappings -}}
+        {{- if $entry.applyToRclone }}
+        - name: {{ include "biockubeinstall.getExtraFilesUniqueName" $key }}
+          mountPath: {{ $key }}
+          subPath: {{ include "biockubeinstall.getFilenameFromPath" $key }}
+        {{- end }}
+        {{- end }}
+      resources:
+        requests:
+          memory: 100Mi
+          cpu: 100m
+    - name: azure-rclone-copy
+      image: rclone/rclone:latest
+      command:
+        - /bin/sh
+        - -c
+      args:
+        - rclone copyto /host/binary_{{ .Values.biocVersion | replace "." "_" }} azurebuckets:bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker -v && rclone copyto /host/library_{{ .Values.biocVersion | replace "." "_" }} azurebuckets:bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker/src/contrib -v && rclone copyto /host/logs_{{ .Values.biocVersion | replace "." "_" }} azurebuckets:bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker/src/package_logs -v
+      volumeMounts:
+        - name: nfs-data
+          mountPath: {{ .Values.persistence.mountPath }}
+        {{- range $key, $entry := .Values.extraFileMappings -}}
+        {{- if $entry.applyToRclone }}
+        - name: {{ include "biockubeinstall.getExtraFilesUniqueName" $key }}
+          mountPath: {{ $key }}
+          subPath: {{ include "biockubeinstall.getFilenameFromPath" $key }}
+        {{- end }}
+        {{- end }}
+      resources:
+        requests:
+          memory: 100Mi
+          cpu: 100m
+    - name: gcp-rclone-copy
+      image: rclone/rclone:latest
+      command:
+        - /bin/sh
+        - -c
+      args:
+        - rclone copyto /host/binary_{{ .Values.biocVersion | replace "." "_" }} gcpbuckets:bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker -v && rclone copyto /host/library_{{ .Values.biocVersion | replace "." "_" }} gcpbuckets:bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker/src/contrib -v && rclone copyto /host/logs_{{ .Values.biocVersion | replace "." "_" }} gcpbuckets:bioconductor-packages/{{ .Values.biocVersion }}/container-binaries/bioconductor_docker/src/package_logs -v
+      volumeMounts:
+        - name: nfs-data
+          mountPath: {{ .Values.persistence.mountPath }}
+        {{- range $key, $entry := .Values.extraFileMappings -}}
+        {{- if $entry.applyToRclone }}
+        - name: {{ include "biockubeinstall.getExtraFilesUniqueName" $key }}
+          mountPath: {{ $key }}
+          subPath: {{ include "biockubeinstall.getFilenameFromPath" $key }}
+        {{- end }}
+        {{- end }}
+      resources:
+        requests:
+          memory: 100Mi
+          cpu: 100m
   restartPolicy: {{ .Values.restartPolicy | quote}}
   volumes:
   - name: nfs-data
     persistentVolumeClaim:
       claimName: {{.Release.Namespace}}-nfs
+  {{- range $key, $entry := .Values.extraFileMappings }}
+  - name: {{ include "biockubeinstall.getExtraFilesUniqueName" $key }}
+    {{- if $entry.useSecret }}
+    secret:
+      secretName: {{ printf "%s-%s" "extrafiles" (include "biockubeinstall.getExtraFilesUniqueName" $key) }}
+    {{- else }}
+    configMap:
+      name: {{ printf "%s-%s" "extrafiles" (include "biockubeinstall.getExtraFilesUniqueName" $key) }}
+    {{- end }}
+  {{- end }}

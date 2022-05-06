@@ -17,3 +17,24 @@ csi:
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Extract the filename portion from a file path
+*/}}
+{{- define "biockubeinstall.getFilenameFromPath" -}}
+{{- printf "%s" (. | splitList "/" | last) -}}
+{{- end -}}
+
+{{/*
+Make string DNS-compliant by turning to lowercase then removing all noncompliant characters
+*/}}
+{{- define "biockubeinstall.makeDnsCompliant" -}}
+{{- (printf "%s" (regexReplaceAll "[^a-z0-9-]" (. | lower) "")) | trunc 63 | trimSuffix "-"  }}
+{{- end -}}
+
+{{/*
+Get unique name for extra files
+*/}}
+{{- define "biockubeinstall.getExtraFilesUniqueName" -}}
+{{- (printf "%s" (include "biockubeinstall.makeDnsCompliant" (printf "extra-%s-%s" (include "biockubeinstall.getFilenameFromPath" .) (. | sha256sum))))  }}
+{{- end -}}

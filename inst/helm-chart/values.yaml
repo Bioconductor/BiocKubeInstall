@@ -90,3 +90,37 @@ redis:
   redisImage: redis
   redisImageTag: '5.0'
   containerPort: 6379
+
+extraFileMappings:
+  /root/.rclone.conf:
+    useSecret: true
+    applyToRclone: true
+    applyToManager: false
+    tpl: false
+    content: |
+      [azurebuckets]
+      sas_url = https://bioconductorhubs.blob.core.windows.net/bucketname?sp=rl&sas-secret
+      type = azureblob
+
+      [osn]
+      type = s3
+      provider = AWS
+      access_key_id = accesskey
+      secret_access_key = secretkey
+      endpoint = https://mghp.osn.xsede.org
+      acl = private
+      no_check_bucket = true
+
+      [awsopendata]
+      type = s3
+      provider = AWS
+      access_key_id = accesskey
+      secret_access_key = secretkey
+      acl = private
+
+      [gcpbuckets]
+      type = google cloud storage
+      service_account_file = /path/to/service_account
+      project_number = 12345678 
+      object_acl = private
+      bucket_acl = private
