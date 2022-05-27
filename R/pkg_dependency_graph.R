@@ -27,6 +27,18 @@ NULL
 {
     ## software package dependencies
     contrib_url <- contrib.url(.worker_repositories(version)[["BioCsoft"]])
+
+    ## Debug code here
+    flog.info(
+        '%d number of packages available in db',
+        length(rownames(db)),
+        name = "kube_install"
+    )
+    flog.info(
+        '%s : URL in Bioc repos',
+        contrib_url,
+        name = "kube_install"
+    )
     idx <- db[, "Repository"] == contrib_url
     software_pkgs <- rownames(db)[idx]
     flog.info(
@@ -177,6 +189,12 @@ pkg_dependencies <-
              binary_repo = character(),
              exclude = character())
 {
+    ## This is required to make sure the pattern match works
+    ## in the .pkg_dependencies_software, where the
+    ## BiocManager::repositories() should NOT give the container-binaries
+    ## repository before BioCsoft
+    Sys.setenv(BIOCONDUCTOR_USE_CONTAINER_REPOSITORY=FALSE)
+
     build <- match.arg(build)
     stopifnot(
         .is_character(binary_repo)
