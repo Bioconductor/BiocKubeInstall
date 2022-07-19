@@ -46,6 +46,17 @@ jobs:
           --disk-size="$NODE_DISK_SIZE" \
           --machine-type="$NODE_TYPE" "$CLUSTER_BASE_NAME-${{ steps.prefix.outputs.prefix }}"
 
+    - name: List running cluster
+      id: clusterup
+      run: echo "::set-output name=log::$(gcloud container clusters list --zone $GKE_ZONE)"
+
+    - name: Notify slack channel that cluster is up
+      uses: slackapi/slack-github-action@v1.19.0
+      with:
+        channel-id: 'C024WH42AD7'
+        slack-message: "BiocKubeInstall cluster is up: ${{ steps.clusterup.outputs.log }}"
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   deploydevelchart:
     name: Deploy devel helm chart and wait
@@ -201,3 +212,16 @@ jobs:
     # Delete release pd
     - run: gcloud compute disks delete --zone "$GKE_ZONE" --quiet $(gcloud compute disks list --format="value(name)" --filter='status~READY' --filter='name~biockubeinstall-nfs-pd-${{needs.clusterlaunch.outputs.prefix}}-release')
       continue-on-error: true
+
+    - name: List running cluster
+      id: clusterstillup
+      run: echo "::set-output name=log::$(gcloud container clusters list --zone $GKE_ZONE)"
+
+    - name: Notify slack channel that cluster is up
+      uses: slackapi/slack-github-action@v1.19.0
+      with:
+        channel-id: 'C024WH42AD7'
+        slack-message: "All clusters should be down. If any clusters are still up, they should be shut down manually. BiocKubeInstall clusters still up: ${{ steps.clusterstillup.outputs.log }}"
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
