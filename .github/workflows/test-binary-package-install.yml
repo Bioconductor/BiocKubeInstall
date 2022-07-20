@@ -9,7 +9,7 @@ jobs:
   test-built-containers:
     strategy:
       matrix:
-        container-tag: [devel, RELEASE_3_14]
+        container-tag: [devel, RELEASE_3_15]
     runs-on: ubuntu-latest
     container: bioconductor/bioconductor_docker:${{ matrix.container-tag }}
 
@@ -18,6 +18,6 @@ jobs:
         run: |
           biocsoft <- rownames(available.packages(repos = BiocManager::repositories()[["BioCsoft"]]))
           pkgs <- biocsoft[sample(length(biocsoft), 5)]
-          AnVIL::install(pkgs)
+          BiocManager::install(pkgs)
           require(pkgs)
         shell: Rscript {0}
