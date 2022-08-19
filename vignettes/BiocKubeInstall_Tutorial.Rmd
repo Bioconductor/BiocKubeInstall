@@ -199,20 +199,16 @@ The docker image of the manager node is always going to be
 ## Usage of Binaries on `bioconductor_docker` images
 
 ```
-BiocManager::install('Bioconductor/AnVIL')
-
-AnVIL::install('BiocParallel')
+BiocManager::install('BiocParallel')
 ```
 
 
 ## Usage of Binaries on the AnVIL
 
 ```{r}
+BiocManager::install('AnVIL')
+
 library(AnVIL)
-
-BiocManager::install('Bioconductor/AnVIL')
-
-AnVIL::install('Rhtslib')
 ```
 
 
