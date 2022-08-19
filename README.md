@@ -32,11 +32,8 @@ Martin Morgan
 
 ## Usage for AnVIL platform and all bioconductor_docker inherited images
 
+Install binary packages using `BiocManager::install`
+
 ```
-BiocManager::install('Bioconductor/AnVIL')
-
-## Should show the Google storage api as the top result
-AnVIL::repositories()
-
-AnVIL::install('Rhtslib')
+BiocManager::install('Rhtslib')
 ``` 
