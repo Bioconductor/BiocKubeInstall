@@ -214,7 +214,12 @@ jobs:
 
     - name: List running cluster
       id: clusterstillup
-      run: echo "::set-output name=log::$(gcloud container clusters list --zone $GKE_ZONE)"
+      run: |
+        CLUSTERLIST=$(gcloud container clusters list --zone $GKE_ZONE)
+        CLUSTERLIST="${CLUSTERLIST//'%'/'%25'}"
+        CLUSTERLIST="${CLUSTERLIST//$'\n'/'%0A'}"
+        CLUSTERLIST="${CLUSTERLIST//$'\r'/'%0D'}"
+        echo "::set-output name=log::${CLUSTERLIST}"
 
     - name: Notify slack channel that cluster is up
       uses: slackapi/slack-github-action@v1.19.0
