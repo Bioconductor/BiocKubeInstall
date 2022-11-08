@@ -6,8 +6,8 @@ on:
     branches:
       - 'master'
 env:
-  DEVEL_TAG: RELEASE_3_16
-  RELEASE_TAG: RELEASE_3_15
+  DEVEL_TAG: devel
+  RELEASE_TAG: RELEASE_3_16
 
 jobs:
   docker-build-push:
