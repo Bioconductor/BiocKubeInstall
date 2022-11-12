@@ -1,6 +1,10 @@
 ARG RELEASE=RELEASE_3_15
 FROM bioconductor/bioconductor_docker:$RELEASE
 
+# Never want these containers to use the binary repo,
+# since the point is to build from source for the binary repo
+ENV BIOCONDUCTOR_USE_CONTAINER_REPOSITORY=FALSE
+
 RUN apt-get update && \
         apt-get install -y --no-install-recommends libhiredis-dev && \
         rm -rf /var/lib/apt/lists/*
