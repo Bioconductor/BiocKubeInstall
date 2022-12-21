@@ -32,11 +32,14 @@ jobs:
       run: echo "::set-output name=prefix::$(echo $(date +'%m-%d-%H-%M-%S'))"
 
     # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
       with:
-        version: '290.0.1'
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        credentials_json: '${{ secrets.GKE_SA_KEY }}'
         project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
 
     # Start cluster
     - run: |-
@@ -72,11 +75,14 @@ jobs:
       uses: actions/checkout@v2
 
     # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
       with:
-        version: '290.0.1'
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        credentials_json: '${{ secrets.GKE_SA_KEY }}'
         project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
 
     - name: Create devel GCP Disk
       run: gcloud compute disks create "biockubeinstall-nfs-pd-${{needs.clusterlaunch.outputs.prefix}}-devel" --size $NFS_PD_SIZE --zone "$GKE_ZONE"
@@ -136,11 +142,14 @@ jobs:
       uses: actions/checkout@v2
 
     # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
       with:
-        version: '290.0.1'
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        credentials_json: '${{ secrets.GKE_SA_KEY }}'
         project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
 
     - name: Create release GCP Disk
       run: gcloud compute disks create "biockubeinstall-nfs-pd-${{needs.clusterlaunch.outputs.prefix}}-release" --size $NFS_PD_SIZE --zone "$GKE_ZONE"
