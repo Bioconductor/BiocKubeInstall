@@ -1,0 +1,56 @@
+name: Check clusters out of band
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'
+
+env:
+  CLUSTER_BASE_NAME: biock8sredis
+  GKE_ZONE: us-east1-b
+  DEPLOYMENT_NAME: binaryBuilder
+  NFS_PD_SIZE: 100Gi
+  NODE_DISK_SIZE: 30Gi
+  DEVEL_MAJOR_VER: 3
+  DEVEL_MINOR_VER: 17
+  RELEA_MAJOR_VER: 3
+  RELEA_MINOR_VER: 16
+  DEVEL_NAMESPACE: devel
+  RELEA_NAMESPACE: release
+  NODE_TYPE: e2-standard-4
+
+jobs:
+  checkcluster:
+    name: Check running GKE clusters
+    runs-on: ubuntu-latest
+    outputs:
+      prefix: ${{ steps.prefix.outputs.prefix }}
+    steps:
+
+    # Setup gcloud CLI
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GKE_SA_KEY }}'
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - name: List running cluster
+      id: clusterup
+      run: |
+        set -xe
+        CLUSTERLIST=$(gcloud container clusters list --zone $GKE_ZONE)
+        CLUSTERLIST="${CLUSTERLIST//'%'/'%25'}"
+        CLUSTERLIST="${CLUSTERLIST//$'\n'/'%0A'}"
+        CLUSTERLIST="${CLUSTERLIST//$'\r'/'%0D'}"
+        echo "::set-output name=log::${CLUSTERLIST}"
+      continue-on-error: true
+
+    - name: Notify slack channel that cluster is up
+      uses: slackapi/slack-github-action@v1.19.0
+      with:
+        channel-id: 'C04GY4WS3NC'
+        slack-message: "BiocKubeInstall cluster is up: ${{ steps.clusterup.outputs.log }}"
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
