@@ -3,8 +3,8 @@ name: Start GKE cluster and build devel then release
 ## Cluster starts at 12pm on Tuesday, Thursday and Saturday
 on: 
   workflow_dispatch:
-  schedule:
-    - cron:  '0 8 * * 2'
+#   schedule:
+#     - cron:  '0 8 * * 2'
 
 env:
   CLUSTER_BASE_NAME: biock8sredis
