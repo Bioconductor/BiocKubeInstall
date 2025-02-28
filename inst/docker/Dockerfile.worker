@@ -1,4 +1,4 @@
-ARG RELEASE=RELEASE_3_15
+ARG RELEASE=RELEASE_3_20
 FROM bioconductor/bioconductor_docker:$RELEASE
 
 # Never want these containers to use the binary repo,

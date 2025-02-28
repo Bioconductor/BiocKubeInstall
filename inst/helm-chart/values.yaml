@@ -7,13 +7,13 @@
 # clusterNamespace: release
 
 dockerImageName: 'bioconductor_docker'  # Image name for which binaries are created
-biocVersion: '3.14'
+biocVersion: '3.20'
 
 workers:
   poolSize: 50              # Number of workers in the cluster
   image:
     repository: bioconductor/bioc-redis
-    tag: RELEASE_3_14 # Needs to match the biocVersion
+    tag: RELEASE_3_20 # Needs to match the biocVersion
   # Inject an `sh` prequel command to run before `R -f /home/docker/worker.R`
   extraCommand: ""
   resources:

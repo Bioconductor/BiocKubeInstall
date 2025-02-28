@@ -8,8 +8,8 @@
 workerPoolSize: 50              # Number of workers in the cluster
 ## TODO: this has to change
 dockerImageName: 'anvil-jupyter'  # Image name for which binaries are created
-biocVersion: '3.14'
-workerImageTag: RELEASE_3_14    # Needs to match the biocVersion
+biocVersion: '3.20'
+workerImageTag: RELEASE_3_20    # Needs to match the biocVersion
 
 # Manager image
 managerImage: bioconductor/bioc-redis
