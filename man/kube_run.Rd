@@ -28,7 +28,7 @@ Run binary installation on k8s cluster
 \examples{
 \dontrun{
 
-kube_run(bioc_version = '3.14',
+kube_run(bioc_version = '3.20',
          image_name = 'bioconductor_docker',
          volume_mount_path = '/host/',
          exclude_pkgs = c('canceR'))
