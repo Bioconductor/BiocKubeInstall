@@ -5,7 +5,7 @@
 # user-oriented configuration
 #
 # clusterNamespace: release
-workerPoolSize: 50              # Number of workers in the cluster
+workerPoolSize: 100             # Number of workers in the cluster
 ## TODO: this has to change
 dockerImageName: 'anvil-jupyter'  # Image name for which binaries are created
 biocVersion: '3.20'
