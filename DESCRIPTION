@@ -33,7 +33,7 @@ Remotes: mtmorgan/RedisParam@master
 LazyData: true
 VignetteBuilder: knitr
 biocViews: Infrastructure
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.2
 Suggests:
     testthat,
     knitr,
