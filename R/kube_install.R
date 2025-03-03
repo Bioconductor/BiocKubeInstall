@@ -272,6 +272,9 @@ kube_install <-
 #'
 #' @param exclude_pkgs character(), list of packages to exclude
 #'
+#' @param secret character(1) path to the location of the secret key
+#'     for the service account.
+#'
 #' @importFrom RedisParam RedisParam rpstopall
 #' @examples
 #' \dontrun{
@@ -286,7 +289,8 @@ kube_install <-
 kube_run <-
     function(bioc_version, image_name,
              volume_mount_path = '/host/',
-             exclude_pkgs = character())
+             exclude_pkgs = character(),
+             secret = "/home/key.json")
 {
     artifacts <- .get_artifact_paths(bioc_version, volume_mount_path)
     repos <- .repos(bioc_version,image_name, cloud_id = 'google')
@@ -296,7 +300,6 @@ kube_run <-
 
     ## Secret key to access bucket on google
     ## PAIN point 1: Also not needed
-    secret <- "/home/key.json"
 
     ## Step 0: Create a bucket if you need to
     ## PAIN POINT 2: Creation of new buckets

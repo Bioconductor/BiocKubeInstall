@@ -8,7 +8,8 @@ kube_run(
   bioc_version,
   image_name,
   volume_mount_path = "/host/",
-  exclude_pkgs = character()
+  exclude_pkgs = character(),
+  secret = "/home/key.json"
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ are being built}
 \item{volume_mount_path}{character(), path to volume mount}
 
 \item{exclude_pkgs}{character(), list of packages to exclude}
+
+\item{secret}{character(1) path to the location of the secret key
+for the service account.}
 }
 \description{
 Run binary installation on k8s cluster
