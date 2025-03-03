@@ -23,7 +23,7 @@ Encoding: UTF-8
 Depends: R (>= 4.0)
 Imports:
     BiocManager,
-    AnVIL,
+    AnVILGCP,
     RedisParam,
     BiocParallel,
     futile.logger,

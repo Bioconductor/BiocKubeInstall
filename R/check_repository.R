@@ -1,4 +1,4 @@
-#' #' @importFrom AnVIL gsutil_ls
+#' #' @importFrom AnVILGCP gsutil_ls
 #' #' @importFrom utils available.packages
 #' initialize_paths <-
 #'     function(bioc_version = '3.13', cloud_provider = c('google', 'azure'))

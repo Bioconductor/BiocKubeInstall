@@ -13,7 +13,7 @@
 #' @return `.gcloud_auth()` shows a message on successful
 #'     authentication.
 #'
-#' @importFrom AnVIL gcloud_cmd
+#' @importFrom AnVILGCP gcloud_cmd
 .gcloud_service_account_auth <-
     function(secret)
 {
@@ -119,7 +119,7 @@
 #' )
 #' }
 #'
-#' @importFrom AnVIL gsutil_cp gsutil_exists
+#' @importFrom AnVILGCP avcopy gsutil_exists
 #'
 #' @export
 gcloud_create_cran_bucket <-
@@ -156,7 +156,7 @@ gcloud_create_cran_bucket <-
         )
 
         ## Copy placeholder file folder into CRAN style repo
-        gsutil_cp(
+        avcopy(
             source = place_holder, destination = destination,
             recursive = FALSE, parallel = FALSE
         )
@@ -178,7 +178,7 @@ gcloud_create_cran_bucket <-
 #' @details Sync packages, logs to cloud storage based on which cloud
 #'     is used.
 #'
-#' @importFrom AnVIL gsutil_rsync gsutil_exists
+#' @importFrom AnVILGCP gsutil_rsync gsutil_exists
 #'
 #' @importFrom futile.logger flog.info flog.appender appender.tee
 #'
@@ -209,7 +209,7 @@ cloud_sync_artifacts <-
 
     ## Sync binaries from /host/binary_3_13 to /src/contrib/
     ## rsync with .gz (gsutil_rsync exclude option)
-    AnVIL::gsutil_rsync(
+    AnVILGCP::gsutil_rsync(
                source = artifacts$bin_path,
                destination = repos$cran,
                dry = FALSE,
@@ -219,7 +219,7 @@ cloud_sync_artifacts <-
               artifacts$bin_path, name = 'kube_install')
 
     ## Sync logs from /host/logs_3_13 to /src/package_logs
-    AnVIL::gsutil_rsync(
+    AnVILGCP::gsutil_rsync(
                source = artifacts$logs_path,
                destination = repos$logs,
                dry = FALSE,
