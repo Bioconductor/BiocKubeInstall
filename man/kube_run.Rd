@@ -10,6 +10,7 @@ kube_run(
   volume_mount_path = "/host/",
   exclude_pkgs = character(),
   secret = "/home/key.json"
+  cloud_id = c("local", "google", "azure"),
 )
 }
 \arguments{
@@ -32,10 +33,13 @@ Run binary installation on k8s cluster
 \examples{
 \dontrun{
 
-kube_run(bioc_version = '3.20',
-         image_name = 'bioconductor_docker',
-         volume_mount_path = '/host/',
-         exclude_pkgs = c('canceR'))
+kube_run(
+    bioc_version = '3.20',
+    image_name = 'bioconductor_docker',
+    cloud_id = 'local',
+    volume_mount_path = '/host/',
+    exclude_pkgs = c('canceR')
+)
 }
 
 }

@@ -30,16 +30,23 @@
 
 #' @keywords internal
 .repos <-
-    function(version, image_name, cloud_id = c('google', 'azure'))
+    function(version, image_name, cloud_id = c('google', 'local', 'azure'))
 {
-
     cloud <- match.arg(cloud_id)
 
-    if (cloud == "google") {
+    if (identical(cloud, "local")) {
+        # temporary location for testing
+        opt <- Sys.getenv("BIOCONDUCTOR_BINARY_REPOSITORY",
+                          Sys.getenv("R_PKG_CACHE_DIR"))
+        opt <- getOption("BIOCONDUCTOR_BINARY_REPOSITORY", opt)
+        bucket <- if (!nzchar(opt)) "/host/" else opt
+    }
+
+    if (identical(cloud, "google")) {
         bucket <- paste0("gs://", "bioconductor-packages/")
     }
 
-    if (cloud == "azure") {
+    if (identical(cloud, "azure")) {
         bucket <- "https://bioconductordocker.blob.core.windows.net/"
     }
 

@@ -279,10 +279,13 @@ kube_install <-
 #' @examples
 #' \dontrun{
 #'
-#' kube_run(bioc_version = '3.20',
-#'          image_name = 'bioconductor_docker',
-#'          volume_mount_path = '/host/',
-#'          exclude_pkgs = c('canceR'))
+#' kube_run(
+#'     bioc_version = '3.20',
+#'     image_name = 'bioconductor_docker',
+#'     cloud_id = 'local',
+#'     volume_mount_path = '/host/',
+#'     exclude_pkgs = c('canceR')
+#' )
 #' }
 #'
 #' @export
@@ -291,22 +294,37 @@ kube_run <-
              volume_mount_path = '/host/',
              exclude_pkgs = character(),
              secret = "/home/key.json")
+             cloud_id = c("local", "google", "azure"),
 {
     artifacts <- .get_artifact_paths(bioc_version, volume_mount_path)
-    repos <- .repos(bioc_version,image_name, cloud_id = 'google')
+    cloud_id <- match.arg(cloud_id)
+    repos <- .repos(bioc_version, image_name, cloud_id = cloud_id)
 
     Sys.setenv(REDIS_HOST = Sys.getenv("REDIS_SERVICE_HOST"))
     Sys.setenv(REDIS_PORT = Sys.getenv("REDIS_SERVICE_PORT"))
 
-    ## Secret key to access bucket on google
-    ## PAIN point 1: Also not needed
+    if (identical(cloud_id, "local")) {
+        local_create_cran_bucket(
+            folder = image_name,
+            bioc_version = bioc_version,
+            bucket = volume_mount_path
+        )
+    } else if (identical(cloud_id, "google")) {
+        ## Secret key to access bucket on google
+        ## PAIN point 1: Also not needed
+        secret <- "/home/key.json"
 
-    ## Step 0: Create a bucket if you need to
-    ## PAIN POINT 2: Creation of new buckets
-    ## Do it via github actions
-    gcloud_create_cran_bucket(folder = image_name,
-                              bioc_version = bioc_version,
-                              secret = secret, public = TRUE)
+        ## Step 0: Create a bucket if you need to
+        ## PAIN POINT 2: Creation of new buckets
+        ## Do it via github actions
+        gcloud_create_cran_bucket(
+            folder = image_name,
+            bioc_version = bioc_version,
+            secret = secret, public = TRUE
+        )
+    } else {
+        stop("'azure' cloud_id not implemented yet")
+    }
 
     ## Step. 2 : Load deps and installed packages
     ## remove exclude packages
@@ -333,12 +351,19 @@ kube_run <-
     rpstopall(BPPARAM)
 
     ##  Step 4: Sync all artifacts produced, binaries, logs
-    ## PAIN POINT 3: Remove from this function - all sync goes to Github actions
-    BiocKubeInstall::cloud_sync_artifacts(
-        secret = secret,
-        artifacts = artifacts,
-        repos = repos
-    )
+    if (identical(cloud_id, "local")) {
+        BiocKubeInstall::local_sync_artifacts(
+           artifacts = artifacts,
+           repos = repos
+        )
+    } else if (identical(cloud_id, "google")) {
+        ## PAIN POINT 3: Remove from this function - all sync goes to Github actions
+        BiocKubeInstall::cloud_sync_artifacts(
+            secret = secret,
+            artifacts = artifacts,
+            repos = repos
+        )
+    }
 
     ## ## Step 5: check if all workers were used
     check <- table(unlist(res))
