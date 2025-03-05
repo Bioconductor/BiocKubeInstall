@@ -138,7 +138,7 @@ kube_wait <-
 #'
 #' @importFrom RedisParam RedisParam
 #' @importFrom BiocParallel bpiterate bpprogressbar SerialParam
-#' @importFrom BiocParallel `bpprogressbar<-` SnowParam
+#'   `bpprogressbar<-` SnowParam
 #' @importFrom futile.logger flog.error flog.info flog.appender
 #'     appender.file appender.tee
 #'
@@ -274,9 +274,11 @@ kube_install <-
 #' @param secret character(1) path to the location of the secret key
 #'     for the service account.
 #'
-#' @importFrom RedisParam RedisParam rpstopall
 #' @param dry.run logical(1), whether to generate a test run with artificial
 #'     artifacts rather than binaries; should be used with `cloud_id = "local"`
+#'
+#' @importFrom RedisParam RedisParam rpstopall
+#'
 #' @examples
 #' \dontrun{
 #'
