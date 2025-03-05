@@ -68,6 +68,6 @@
 {
     src <- list.files(artifacts$bin_path, full.names = TRUE, pattern = ".out$")
     dest <- paste0(artifacts$logs_path, "/", basename(src))
-
-    file.rename(src, dest)
+    if (length(src))
+        file.rename(src, dest)
 }
