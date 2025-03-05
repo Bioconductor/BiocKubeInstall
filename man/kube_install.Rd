@@ -55,7 +55,6 @@ gcloud_create_cran_bucket("gs://my-new-binary-bucket",
 deps_new <- pkg_dependencies(binary_repo = "my-new-binary-bucket/1.0/3.11")
 
 kube_install(
-    workers = 6L,
     lib_path = "/host/library",
     bin_path = "/host/binaries",
     deps = deps_new
