@@ -5,7 +5,7 @@
 \title{Install and create binaries for packages parallely using a
 kubernetes cluster.}
 \usage{
-kube_install(lib_path, bin_path, logs_path, deps, BPPARAM = NULL)
+kube_install(lib_path, bin_path, logs_path, deps, dry.run, BPPARAM = NULL)
 }
 \arguments{
 \item{lib_path}{character() path where R package libraries are

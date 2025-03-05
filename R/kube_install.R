@@ -30,7 +30,7 @@
 #'
 #' @export
 kube_install_single_package <-
-    function(pkg, lib_path, bin_path, logs_path)
+    function(pkg, dry.run, lib_path, bin_path, logs_path)
 {
     .libPaths(c(lib_path, .libPaths()))
 
@@ -172,8 +172,7 @@ kube_wait <-
 #'
 #' @export
 kube_install <-
-    function(lib_path, bin_path, logs_path,
-             deps, BPPARAM = NULL)
+    function(lib_path, bin_path, logs_path, deps, dry.run, BPPARAM = NULL)
 {
     stopifnot(
         .is_scalar_character(lib_path),
@@ -213,6 +212,7 @@ kube_install <-
 
     result <- bpiterate(
         iter$ITER, iter$FUN,
+        dry.run = dry.run,
         lib_path = lib_path,
         bin_path = bin_path,
         logs_path = logs_path,
@@ -275,6 +275,8 @@ kube_install <-
 #'     for the service account.
 #'
 #' @importFrom RedisParam RedisParam rpstopall
+#' @param dry.run logical(1), whether to generate a test run with artificial
+#'     artifacts rather than binaries; should be used with `cloud_id = "local"`
 #' @examples
 #' \dontrun{
 #'
@@ -343,6 +345,7 @@ kube_run <-
                 lib_path = artifacts$lib_path,
                 bin_path = artifacts$bin_path,
                 logs_path = artifacts$logs_path,
+                dry.run = dry.run,
                 deps = deps, BPPARAM = BPPARAM
     )
 

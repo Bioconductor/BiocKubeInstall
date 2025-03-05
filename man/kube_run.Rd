@@ -11,6 +11,7 @@ kube_run(
   exclude_pkgs = character(),
   secret = "/home/key.json"
   cloud_id = c("local", "google", "azure"),
+  dry.run = TRUE,
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ or 3.13}
 are being built}
 
 \item{volume_mount_path}{character(), path to volume mount}
+
+\item{dry.run}{logical(1), whether to generate a test run with artificial
+artifacts rather than binaries; should be used with `cloud_id = "local"`}
 
 \item{exclude_pkgs}{character(), list of packages to exclude}
 
