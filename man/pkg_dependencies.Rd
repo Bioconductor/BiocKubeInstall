@@ -6,7 +6,7 @@
 \usage{
 pkg_dependencies(
   version,
-  build = c("_software", "_update"),
+  build = c("_software", "_update", "_timings"),
   ultimate_pkg = character(),
   binary_repo = character(),
   exclude = character(),

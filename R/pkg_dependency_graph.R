@@ -144,6 +144,72 @@ NULL
     .exclude(deps, c(.base_packages(), exclude))
 }
 
+.pkg_dependencies_timings <- function(version, db, exclude_pkgs) {
+    contrib_url <- contrib.url(.worker_repositories(version)[["BioCsoft"]])
+    idx <- db[, "Repository"] == contrib_url
+    software_pkgs <- rownames(db)[idx]
+    flog.info(
+        '%d software packages available',
+        length(software_pkgs),
+        name = "kube_install"
+    )
+
+    ## The following exluded packages don't build on
+    ## bioconductor_docker set of images
+    names(exclude_pkgs) <- exclude_pkgs
+    if (length(exclude_pkgs)) {
+        flog.info(
+            '%s software packages manually excluded',
+            paste(exclude_pkgs, collapse = ", ")
+        )
+    }
+
+    ## all software packages
+    deps0 <- package_dependencies(software_pkgs, db, recursive = TRUE)
+
+    ## FULL dependency graph of non-software dependencies
+    other <- setdiff(unlist(deps0, use.names = FALSE), names(deps0))
+    deps1 <- package_dependencies(other, db, recursive = TRUE)
+
+    deps <- c(deps0, deps1)
+    ## exclude base
+    exclude_base <- .exclude(deps, .base_packages())
+
+    ## exclude manually from the argument 'exclude_pkgs'
+    deps <- .exclude(exclude_base, exclude_pkgs)
+# Install times from BBS --------------------------------------------------
+    dev <- BiocPkgTools::biocBuildReport(
+        version = version, stage.timings = TRUE
+    )
+    
+    dev[["elapsed"]] <- as.numeric(
+        vapply(strsplit(dev[["EllapsedTime"]], " "), `[`, character(1L), 1L)
+    )
+    devdf <- with(dev, dev[stage == "install" & node == "merida1", ])
+    times <- devdf[["elapsed"]]
+    names(times) <- devdf[["pkg"]]
+    timesdf <- stack(times)
+    names(timesdf) <- c("install_time_sec", "Package")
+
+# No. of Reverse Dependencies ---------------------------------------------
+    # db <- available.packages(repos = BiocManager::repositories())
+    ldeps <- tools::package_dependencies(
+        names(times), db, reverse=TRUE, recursive = TRUE
+    )
+    revdeps <- lengths(ldeps)
+    rdepsdf <- stack(revdeps)
+    names(rdepsdf) <- c("n_rev_deps", "Package")
+    
+    revdep_times <- merge(timesdf, rdepsdf)
+    revdep_times <-
+        revdep_times[with(revdep_times, order(-n_rev_deps, install_time_sec)), ]
+    ## NA values get dropped 
+    ndeps <- deps[na.omit(match(revdep_times[["Package"]], names(deps)))]
+    crans <- deps[setdiff(names(deps), names(ndeps))]
+    crans <- crans[names(sort(lengths(crans)))]
+    c(ndeps, crans)
+}
+
 .pkg_dependencies <-
     function(db, binary_repo_url, pkgs, build)
 {
@@ -196,7 +262,7 @@ NULL
 #'
 #' @export
 pkg_dependencies <-
-    function(version, build = c("_software", "_update"),
+    function(version, build = c("_software", "_update", "_timings"),
              ultimate_pkg = character(),
              binary_repo = character(),
     ## This is required to make sure the pattern match works
@@ -240,6 +306,8 @@ pkg_dependencies <-
     } else if (identical(build, "_update")) {
         deps <-
             .pkg_dependencies_update(version, db, ultimate_pkg, binary_repo_url)
+    } else if (identical(build, "_timings")) {
+        deps <- .pkg_dependencies_timings(version, db, exclude) 
     } else {
         ## FIXME: support building arbitrary vector of packages?
         deps <- .pkg_dependencies(version, db, binary_repo_url, build)
