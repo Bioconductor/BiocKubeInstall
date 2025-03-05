@@ -15,6 +15,8 @@
 #' @param logs_path character() path where R package binary build logs
 #'     are stored.
 #'
+#' @inheritParams kube_install
+#'
 #' @examples
 #' \dontrun{
 #' kube_install_single_package(
@@ -39,35 +41,35 @@ kube_install_single_package <-
 
     flog.info("building binary for package: %s", pkg, name = 'kube_install')
     cwd <- setwd(bin_path)
-    on.exit(setwd(cwd))
-
-    ## The default return value for a success package building
-    result <- pkg
-
-    withCallingHandlers({
-        suppressMessages(
-            BiocManager::install(
-                             pkg,
-                             INSTALL_opts = "--build",
-                             update = FALSE,
-                             quiet = TRUE,
-                             force = TRUE,
-                             ## TODO: a successful install output isn't useful
-                             keep_outputs = TRUE
-                         )
+    warn_opt <- options(warn = 2)
+    on.exit({
+        options(warn_opt)
+        setwd(cwd)
+    })
+    if (dry.run) {
+        filename <- paste0(pkg, "_timing.txt")
+        file.create(filename)
+    } else {
+        tryCatch(
+            suppressMessages(
+                BiocManager::install(
+                    pkg,
+                    INSTALL_opts = "--build",
+                    update = FALSE,
+                    quiet = TRUE,
+                    force = TRUE,
+                    ## TODO: a successful install output isn't useful
+                    keep_outputs = TRUE ## saves successful run
+                )
+            ),
+            error = function(e) {
+                flog.error("Error: package %s failed", pkg, name = "kube_install")
+                print(conditionMessage(e))
+                e
+            }
         )
-        },
-        error = function(e) {
-            flog.error("Error: package %s failed", pkg, name = "kube_install")
-            result <<- e
-        },
-        warning = function(e) {
-            flog.error("Error: package %s failed", pkg, name = "kube_install")
-            result <<- e
-            tryInvokeRestart("muffleWarning")
-        }
-    )
-    result
+    }
+    Sys.info()[["nodename"]]
 }
 
 
