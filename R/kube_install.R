@@ -271,6 +271,13 @@ kube_install <-
 #'
 #' @param exclude_pkgs character(), list of packages to exclude
 #'
+#' @param depth0 logical(1), whether to test only the first layer of packages
+#'     with zero dependencies
+#' 
+#' @param ultimate_pkg `character(1)` name of the leaf node package to build
+#'   including all its dependencies. This is useful for building a single
+#'   package and all its dependencies.
+#'
 #' @param secret character(1) path to the location of the secret key
 #'     for the service account.
 #'
@@ -295,9 +302,12 @@ kube_install <-
 kube_run <-
     function(bioc_version, image_name,
              volume_mount_path = '/host/',
-             exclude_pkgs = character(),
-             secret = "/home/key.json")
              cloud_id = c("local", "google", "azure"),
+             build = c("_software", "_update", "_timings"),
+             depth0 = FALSE,
+             dry.run = TRUE,
+             ultimate_pkg = character(),
+             exclude_pkgs = character())
 {
     artifacts <- .get_artifact_paths(bioc_version, volume_mount_path)
     cloud_id <- match.arg(cloud_id)
@@ -332,15 +342,18 @@ kube_run <-
     ## Step. 2 : Load deps and installed packages
     ## remove exclude packages
     deps <- pkg_dependencies(
-                bioc_version, build = "_software",
+                bioc_version, build = build,
                 binary_repo = repos$binary,
+                ultimate_pkg = ultimate_pkg,
                 exclude = exclude_pkgs
     )
 
+    if (depth0)
+        deps <- deps[lengths(deps) == 0L]
     ## Step 3: Run kube_install so package binaries are built
     BPPARAM <- RedisParam(
         jobname = "binarybuild", is.worker = FALSE,
-        progressbar = FALSE, stop.on.error = FALSE
+        progressbar = TRUE, stop.on.error = FALSE
     )
 
     res <- kube_install(

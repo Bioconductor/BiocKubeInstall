@@ -8,10 +8,12 @@ kube_run(
   bioc_version,
   image_name,
   volume_mount_path = "/host/",
-  exclude_pkgs = character(),
-  secret = "/home/key.json"
   cloud_id = c("local", "google", "azure"),
+  build = c("_software", "_update", "_timings"),
+  depth0 = FALSE,
   dry.run = TRUE,
+  ultimate_pkg = character(),
+  exclude_pkgs = character()
 )
 }
 \arguments{
@@ -23,8 +25,15 @@ are being built}
 
 \item{volume_mount_path}{character(), path to volume mount}
 
+\item{depth0}{logical(1), whether to test only the first layer of packages
+with zero dependencies}
+
 \item{dry.run}{logical(1), whether to generate a test run with artificial
 artifacts rather than binaries; should be used with `cloud_id = "local"`}
+
+\item{ultimate_pkg}{`character(1)` name of the leaf node package to build
+including all its dependencies. This is useful for building a single
+package and all its dependencies.}
 
 \item{exclude_pkgs}{character(), list of packages to exclude}
 
