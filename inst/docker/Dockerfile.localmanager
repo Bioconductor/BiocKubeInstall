@@ -1,13 +1,15 @@
-FROM bioconductor/bioconductor_docker:RELEASE_3_20
+FROM bioconductor/bioconductor_docker:devel
 
 RUN apt-get update && \
-        apt-get install -y --no-install-recommends libhiredis-dev && \
-        rm -rf /var/lib/apt/lists/*
+	apt-get install -y --no-install-recommends libhiredis-dev vim && \
+	rm -rf /var/lib/apt/lists/*
 
+COPY manager_demo.R /home/rstudio/manager_demo.R
+COPY 01-Renviron /etc/cont-init.d/01-Renviron
 COPY BiocRprofile /home/rstudio/.Rprofile
-COPY worker.R /home/docker/
 
 RUN R -e 'BiocManager::install("Bioconductor/AnVILGCP")'
+RUN R -e 'BiocManager::install("Bioconductor/BiocParallel")'
 
 WORKDIR BiocKubeInstall
 
