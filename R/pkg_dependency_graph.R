@@ -23,7 +23,7 @@
 NULL
 
 .pkg_dependencies_software <-
-    function(version, db, exclude_pkgs)
+    function(version, db, ultimate_pkg, exclude_pkgs)
 {
     ## software package dependencies
     contrib_url <- contrib.url(.worker_repositories(version)[["BioCsoft"]])
@@ -58,6 +58,15 @@ NULL
         )
     }
 
+    if (length(ultimate_pkg)) {
+        software_pkgs <- BiocPkgTools::pkgBiocDeps(
+            pkg = ultimate_pkg,
+            pkgType = "software",
+            which = "all",
+            recursive = TRUE
+        )
+        software_pkgs <- unique(unname(unlist(software_pkgs)))
+    }
     ## all software packages
     deps0 <- package_dependencies(software_pkgs, db, recursive = TRUE)
 
@@ -93,7 +102,8 @@ NULL
     )
 
     ## new or updateable packages; package names cannot contain '_'
-    pkgs_binary <- paste(db_binary[,"Package"], db_binary[, "Version"], sep = "_")
+    pkgs_binary <-
+        paste(db_binary[,"Package"], db_binary[, "Version"], sep = "_")
     pkgs_soft <- paste(db_soft[,"Package"], db_soft[, "Version"], sep = "_")
     pkgs0 <- sub("_.*", "", setdiff(pkgs_soft, pkgs_binary))
 
@@ -187,22 +197,30 @@ NULL
 #' @export
 pkg_dependencies <-
     function(version, build = c("_software", "_update"),
+             ultimate_pkg = character(),
              binary_repo = character(),
-             exclude = character())
-{
     ## This is required to make sure the pattern match works
     ## in the .pkg_dependencies_software, where the
     ## BiocManager::repositories() should NOT give the container-binaries
     ## repository before BioCsoft
     # Sys.setenv(BIOCONDUCTOR_USE_CONTAINER_REPOSITORY=FALSE)
 
+             exclude = character(),
+             cloud_id = c("local", "google", "azure")
+) {
     build <- match.arg(build)
     stopifnot(
         .is_character(binary_repo)
     )
     ## TODO: make sure function is usable for other clouds
     ## pass argument 'cloud = "gcp"'
-    cloud <- "https://storage.googleapis.com"
+    cloud_id <- match.arg(cloud_id)
+    cloud <- switch(
+        cloud_id,
+        local = "file:///host/",
+        google = "https://storage.googleapis.com",
+        azure = "https://bioconductordocker.blob.core.windows.net"
+    )
 
     ## use `sprintf()` to produce a zero-length vector if binary_repo
     ## == character()
@@ -218,9 +236,10 @@ pkg_dependencies <-
     )
 
     if (identical(build, "_software")) {
-        deps <- .pkg_dependencies_software(version, db, exclude)
+        deps <- .pkg_dependencies_software(version, db, ultimate_pkg, exclude)
     } else if (identical(build, "_update")) {
-        deps <- .pkg_dependencies_update(version, db, binary_repo_url)
+        deps <-
+            .pkg_dependencies_update(version, db, ultimate_pkg, binary_repo_url)
     } else {
         ## FIXME: support building arbitrary vector of packages?
         deps <- .pkg_dependencies(version, db, binary_repo_url, build)
