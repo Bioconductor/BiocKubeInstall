@@ -10,7 +10,7 @@ dockerImageName: 'bioconductor_docker'  # Image name for which binaries are crea
 biocVersion: '3.20'
 
 workers:
-  poolSize: 100             # Number of workers in the cluster
+  poolSize: 50             # Number of workers in the cluster
   image:
     repository: bioconductor/bioc-redis
     tag: RELEASE_3_20 # Needs to match the biocVersion
