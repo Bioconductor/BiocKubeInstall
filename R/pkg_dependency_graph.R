@@ -83,7 +83,7 @@ NULL
 }
 
 .pkg_dependencies_update <-
-    function(version, db, binary_repo_url)
+    function(version, db, ultimate_pkg, binary_repo_url)
 {
     stopifnot(
         .is_scalar_character(binary_repo_url)
