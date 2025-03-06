@@ -26,7 +26,7 @@ spec:
         - containerPort: 8787
       command: ["Rscript"]
 #      args: ["-e", "sessionInfo()"]
-      args: ["-e", "BiocKubeInstall::kube_run('3.20', image_name = 'biconductor_docker', build = '_software', dry.run = FALSE, depth0 = FALSE)"]
+      args: ["-e", "BiocKubeInstall::kube_run('3.20', image_name = 'biconductor_docker', build = '_software', dry.run = FALSE, depth0 = TRUE, ultimate_pkg = 'S4Vectors', cloud_id = 'local')"]
   restartPolicy: OnFailure
   volumes:
     - name: local-provision
