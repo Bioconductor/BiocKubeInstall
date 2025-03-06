@@ -14,6 +14,6 @@ RUN R -e 'BiocManager::install("Bioconductor/BiocParallel")'
 WORKDIR BiocKubeInstall
 
 RUN git clone https://github.com/Bioconductor/BiocKubeInstall.git . && \
-    git checkout tags/local-host && \
+    git checkout -b local-host origin/local-host && \
     R -e 'remotes::install_local(".", repos = BiocManager::repositories())'
 
