@@ -4,27 +4,27 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'master'
+      - 'devel'
 env:
-  DEVEL_TAG: RELEASE_3_17
-  RELEASE_TAG: RELEASE_3_16
+  DEVEL_TAG: RELEASE_3_21
+  RELEASE_TAG: RELEASE_3_20
 
 jobs:
   docker-build-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v3 
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Build and push manager
         id: docker_build_manager
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           file: inst/docker/Dockerfile.manager
           context: ./inst/docker
@@ -33,7 +33,7 @@ jobs:
       
       - name: Build and push devel worker
         id: docker_build_devel
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           file: inst/docker/Dockerfile.worker
           context: ./inst/docker
@@ -44,7 +44,7 @@ jobs:
 
       - name: Build and push release worker
         id: docker_build_release
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           file: inst/docker/Dockerfile.worker
           context: ./inst/docker
