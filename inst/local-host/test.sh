@@ -1,8 +1,9 @@
 # git clone git@github.com:Bioconductor/BiocKubeInstall
-# git checkout -b local
+# git checkout -b local-host origin/local-host
 cd ~/bioc/BiocKubeInstall/inst/local-host
 
-minikube start --cpus 21 --memory 24384
+minikube start --cpus 14 --memory 22g --disk-size 120g
+## minikube stop
 
 kubectl get all
 kubectl cluster-info
@@ -17,7 +18,7 @@ kubectl create -f persist/local-pvc.yaml
 kubectl create -f persist/local-pv.yaml
 
 ## OR
-# kubectl apply -f persist/
+kubectl apply -f persist/
 
 
 ## remove local provision
@@ -63,6 +64,7 @@ kubectl get all
 
 ## get info for debugging
 kubectl describe pod manager
+kubectl describe pod redis-master
 kubectl describe pods workcluster
 
 ## logs
