@@ -7,6 +7,6 @@ spec:
     - ReadWriteOnce
   storageClassName: local-storage
   capacity:
-    storage: 20Gi
+    storage: 60Gi
   hostPath:
     path: /home/mramos/data/minikube

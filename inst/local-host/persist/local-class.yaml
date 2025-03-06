@@ -4,7 +4,7 @@ metadata:
   name: local-provision
 spec:
   capacity:
-    storage: 20Gi
+    storage: 60Gi
   volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
